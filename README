@@ -1,35 +1,82 @@
-Lingua/PT/Hyphenate version 1.03
+Lingua/PT/Hyphenate version 1.04
 ================================
 
-Separates Portuguese words in syllables
+Lingua::PT::Hyphenate - Separates Portuguese words in syllables
+
+=head1 SYNOPSIS
 
   use Lingua::PT::Hyphenate;
-    
+
   @syllables = hyphenate("teste")   # @syllables now hold ('tes', 'te')
 
-INSTALLATION
+  # or
 
-To install this module type the following:
+  $word = new Lingua::PT::Hyphenate;
+  @syllables = $word->hyphenate;
 
-   perl Makefile.PL
-   make
-   make test
-   make install
+=head1 DESCRIPTION
 
-DEPENDENCIES
+Separates Portuguese words into syllables.
 
-No dependencies
+=head1 ALGORITHM
 
-SEE ALSO
+The algorithm has several steps, but all of them consist on marking
+points of the word that either are to be separated or that are not
+allowed to be
+separated.
 
-The POD documentation in Hyphenate.pm
+After all those main steps are fulfilled, the marks for non-separation
+are removed and the word is finally splitted by the other marks and
+returned as an array.
 
-Gramática Universal da Língua Portuguesa (Texto Editora)
+=head1 METHODS
 
-COPYRIGHT AND LICENCE
+=head2 new
 
-Copyright (C) 2004 Jose Alves de Castro
+Creates a new Lingua::PT::Hyphenate object.
+
+  $word = Lingua::PT::Hyphenate->new("palavra");
+  # "palavra" is Portuguese for "word"
+
+If you're doing this lots of time, it would probably be better for you
+to use the hyphenate function directly (that is, creating a new object
+for each word in a long text doesn't seem so bright if you're not
+going to use it later on).
+
+=head2 hyphenate
+
+Separates a Portuguese in syllables.
+
+  my @syllables = hyphenate('palavra');
+  # @syllables now hold ('pa', 'la', 'vra')
+
+  # or, if you created an object
+  my @syllables = $word->hyphenate
+
+=head1 TO DO
+
+=over 6
+
+=item * A better explanation of the algorithm;
+
+=item * More tests, preferably made by someone else or taken out of some book.
+
+=back
+
+=head1 SEE ALSO
+
+Gramatica Universal da Lingua Portuguesa (Texto Editora)
+
+More tools for the Portuguese language processing can be found at the Natura
+project: http://natura.di.uminho.pt
+
+=head1 AUTHOR
+
+Jose Castro, C<< <cog@cpan.org> >>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2004 by Jose Castro
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
-

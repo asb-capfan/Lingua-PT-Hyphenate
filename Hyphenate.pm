@@ -18,7 +18,28 @@ our @EXPORT = qw(
 	hyphenate
 );
 
-our $VERSION = '1.03';
+our $VERSION = '1.04';
+
+=head1 NAME
+
+Lingua::PT::Hyphenate - Separates Portuguese words in syllables
+
+=head1 SYNOPSIS
+
+  use Lingua::PT::Hyphenate;
+
+  @syllables = hyphenate("teste")   # @syllables now hold ('tes', 'te')
+
+  # or
+
+  $word = new Lingua::PT::Hyphenate;
+  @syllables = $word->hyphenate;
+
+=head1 DESCRIPTION
+
+Separates Portuguese words into syllables.
+
+=cut
 
 my ($vowel,$consonant,$letter,$oc_fr);
 my ($ditongo,$ditongos,@regex);
@@ -39,6 +60,19 @@ BEGIN {
   $ditongos = join "|", map { /(.)(.*)/ ; "$1(?=$2)" } @ditongos;
   $ditongos = qr/$ditongos/i;
 
+=head1 ALGORITHM
+
+The algorithm has several steps, but all of them consist on marking
+points of the word that either are to be separated or that are not
+allowed to be
+separated.
+
+After all those main steps are fulfilled, the marks for non-separation
+are removed and the word is finally splitted by the other marks and
+returned as an array.
+
+=cut
+
   @regex = (
     [ qr/[gq]u(?=$vowel)/i,                                  '.' ],
     [ qr/$letter(?=${consonant}s)/i,                         '.' ],
@@ -57,20 +91,19 @@ BEGIN {
 
 }
 
-=head1 NAME
+=head1 METHODS
 
-Lingua::PT::Hyphenate - Separates Portuguese words in syllables
+=head2 new
 
-=head1 SYNOPSIS
+Creates a new Lingua::PT::Hyphenate object.
 
-  use Lingua::PT::Hyphenate;
+  $word = Lingua::PT::Hyphenate->new("palavra");
+  # "palavra" is Portuguese for "word"
 
-  @syllables = hyphenate("teste")   # @syllables now hold ('tes', 'te')
-
-  # or
-
-  $word = new Lingua::PT::Hyphenate;
-  @syllables = $word->hyphenate;
+If you're doing this lots of time, it would probably be better for you
+to use the hyphenate function directly (that is, creating a new object
+for each word in a long text doesn't seem so bright if you're not
+going to use it later on).
 
 =cut
 
@@ -78,6 +111,18 @@ sub new {
   my ($self, $word) = @_;
   bless \$word, $self;
 }
+
+=head2 hyphenate
+
+Separates a Portuguese in syllables.
+
+  my @syllables = hyphenate('palavra');
+  # @syllables now hold ('pa', 'la', 'vra')
+
+  # or, if you created an object
+  my @syllables = $word->hyphenate
+
+=cut
 
 sub hyphenate {
   $_[0] || return ();
@@ -105,28 +150,30 @@ sub hyphenate {
 1;
 __END__
 
-=head1 DESCRIPTION
+=head1 TO DO
 
-Separates Portuguese words into syllables.
+=over 6
+
+=item * A better explanation of the algorithm;
+
+=item * More tests, preferably made by someone else or taken out of some book.
+
+=back
 
 =head1 SEE ALSO
 
-If you're looking for Natural Language Processing tools, you may like
-this Portuguese site: http://natura.di.uminho.pt
-
 Gramatica Universal da Lingua Portuguesa (Texto Editora)
 
-=head1 BUGS
-
-None known, but more tests need to be made.
+More tools for the Portuguese language processing can be found at the Natura
+project: http://natura.di.uminho.pt
 
 =head1 AUTHOR
 
-Jose Alves de Castro, E<lt>cog [at] cpan [dot] org<gt>
+Jose Castro, C<< <cog@cpan.org> >>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2004 by Jose Alves de Castro
+Copyright 2004 by Jose Castro
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
