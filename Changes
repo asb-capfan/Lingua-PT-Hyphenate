@@ -1,0 +1,9 @@
+Revision history for Perl extension Lingua::PT::Hyphenate.
+
+0.01  Mon May 10 21:08:58 2004
+	- first release ready. still doesn't treat all cases
+
+0.01  Mon May 10 16:31:58 2004
+	- original version; created by h2xs 1.22 with options
+		-XAn Lingua::PT::Hyphenate
+
