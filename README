@@ -1,16 +1,24 @@
-Lingua/PT/Hyphenate version 0.01
+Lingua/PT/Hyphenate version 1.00
 ================================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+Separates Portuguese words in syllables
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
+  use Lingua::PT::Hyphenate;
+    
+  @syllables = hyphenate("teste")   # @syllables now hold ('tes', 'te')
+
+Works based on the following rules:
+
+0) Mark special consonant combinations not to separate (like "tr", "vr", etc);
+
+1) Separate consonants (not allowing consonants to be isolated; not
+   separating "ch", "lh", "nh");
+
+2) Separate vogals from consonants on their right;
+
+3) Separate vowels from vowels (except for special cases like "ai", "au", etc).
+
+4) Unmark the special consonant combinations marked in step 0)
 
 INSTALLATION
 
@@ -23,13 +31,13 @@ To install this module type the following:
 
 DEPENDENCIES
 
-This module requires these other modules and libraries:
+No dependencies
 
-  blah blah blah
+SEE ALSO
+
+The POD documentation in Hyphenate.pm
 
 COPYRIGHT AND LICENCE
-
-Put the correct copyright and licence information here.
 
 Copyright (C) 2004 Jose Alves de Castro
 

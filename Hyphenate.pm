@@ -18,108 +18,30 @@ our @EXPORT = qw(
 	hyphenate
 );
 
-our $VERSION = '0.01';
+our $VERSION = '1.00';
 
-my @syllables;
-my %exceptions;
-
+my $regex;
+my @regex;
+my ($al,$cc);
 BEGIN {
-  @syllables = qw(
-    ar an as al
-    a
 
-    brar bril
-    bre bra ber ben bor bar bas
-    ba be bo bi bu
+#ai au aú ei eu ia ie io iu ié iô oi ou ua ue ui uo uá ué uí ái áu éi éu ói ãe ãi ão õe
 
-    chão
-    cão com cum con cen cor cer cho céu cha cea can cam çar ção cio cas
-    co câ ca ça ci ce ço cí
+  $al = qr/[ãáéíóõúçÃÁÉÍÓÕÚÇ[:alpha:]]/i;
 
-    dir des der dar dor dão dio dia
-    do da de di du
+  $cc = qr/bl|br|cl|cr|dr|fl|fr|gr|tl|tr|vr/i;
 
-    eu en es em
-    e
+  $regex = join "|", map { /(.)(.)/ ; "$1(?=$2)" } q(aa aá aã áa áá áã ãa ãá
+           ãã ae aé áe áé ãé aí áí ãí ao aó aô aõ áo áó áô áõ ãó ãô ãõ áú ãu
+           ãú ea eá eã éa éá éã ee eé ée éé eí éí eo eó eô eõ éo éó éô éõ eú
+           éú iá iã ía íá íã íe íé ii ií íi íí ió iõ ío íó íô íõ iú íu íú oa
+           oá oã óa óá óã ôa ôá ôã õa õá õã oe oé óe óé ôe ôé õé oí óí ôi ôí
+           õi õí oo oó oô oõ óo óó óô óõ ôo ôó ôõ õo õó õô õõ oú óu óú ôu ôú
+           õu õú uã úa úá úã úe úé úi úí uó uô uõ úo úó úô úõ uu uú úu úú );
 
-    fran
-    fui fri fre for fan faz fei
-    fu fo fa fi fe
-
-    guei guar gran
-    gir gos gal gem gel gua gla gam gor gra
-    gu ga gi ge go
-
-    hor
-    há ha he ho
-
-    in ir
-    í i
-
-    jan jor
-    já jo
-
-    lhões
-    lhar lher lhei lhas lhou lhão
-    lha lho liu lei lam liz lar lin lín ler los
-    la lo le li lu lá ló
-
-    mons
-    men mar mor mun mão
-    me ma mi mo mu mí mó má
-
-    nhei nham
-    nhã nam nei nia nel nas nho noi nio
-    no na ne ni nu nó
-
-    or os on
-    o
-
-    pren pães
-    pre pri pon por pro pão
-    pé pa po pu pi pe pí
-
-    quais quios
-    qual quan quer ques
-    qui que
-
-    rói rir rar rei rão ren rer rio
-    ri ru ra ro re rá
-
-    sois
-    sim sus seu sua sem sen sal sol sub são
-    sa so sí se si
-
-    trar tron truz
-    tar teu tis tir tro ter til tim tes tão tua tia tio tal ten tás tei tor
-    ta tu ti te to tá
-
-    ur
-    u
-
-    vel vir ver vân ven ves vez vês vro
-    va ve vê vô vó vi vá vo
-
-    ze zi za zo zu
-  );
-    # don't forget 'x'
-  %exceptions = (
-    borboleta	=> [qw(bor bo le ta)],
-    canela	=> [qw(ca ne la)],
-    janela	=> [qw(ja ne la)],
-    embora	=> [qw(em bo ra)],
-    'camarão'	=> [qw(ca ma rão)],
-    submarino	=> [qw(sub ma ri no)],
-    marinheiro	=> [qw(ma ri nhei ro)],
-    comida	=> [qw(co mi da)],
-    camelo	=> [qw(ca me lo)],
-    medicamento	=> [qw(me di ca men to)],
-    cama	=> [qw(ca ma)],
-    camisa	=> [qw(ca mi sa)],
-    camiseta	=> [qw(ca mi se ta)],
-    casaco	=> [qw(ca sa co)],
-    motorizada	=> [qw(mo to ri za da)],
-  );
+  @regex = (qr/$al[^ãáéíóõúaeiou](?=[^ãáéíóõúaieouh.]$al)/i,
+            qr/[ãáéíóõúaieou](?=[^ãáéíóõúaieou][^|.])/i,
+            qr/$regex/i);
 }
 
 =head1 NAME
@@ -135,24 +57,15 @@ Lingua::PT::Hyphenate - Separates Portuguese words in syllables
 =cut
 
 sub hyphenate {
-  my $word = shift || return ();
-  my @syll = ();
+  $_ = shift || return ();
 
-  defined $exceptions{$word} && return @{$exceptions{$word}};
+  /^$al+$/ || return ();
 
-  while ($word) {
-    my $going = 1;
-    for (@syllables) {
-      if ($word =~ s/^$_//) {
-        push @syll, $_;
-        $going = 0;
-        last;
-      }
-    }
-    if ($going) {return @syll}
-  }
+  s/$cc/.$&./g;
+  for my $regex ( @regex ) { s/$regex/$&|/g; }
+  y/.//d;
 
-  return @syll;
+  split '\|'
 }
 
 1;
@@ -162,19 +75,35 @@ __END__
 
 Separates Portuguese words into syllables.
 
-The module currently works based on known syllables. There are two main
-disadvantages to this:
+Separation is done in three easy steps:
 
-1 -> If a syllable for your word isn't contemplated, there's some chance you
-won't get the result you want.
+0) Mark special consonant combinations not to separate (like "tr",
+   "vr", etc);
 
-2 -> Special cases have to be contemplated with the current algorithm.
+1) Separate consonants (not allowing consonants to be isolated; not
+   separating "ch", "lh", "nh");
 
-I will have to do something about this in a near future.
+2) Separate vogals from consonants on their right;
+
+3) Separate vowels from vowels (except for special cases like "ai",
+   "au", etc).
+
+4) Unmark the special consonant combinations marked in step 0)
+
+=head1 SEE ALSO
+
+If you're into Natural Language Processing tools, you may like this
+Portuguese site: http://natura.di.uminho.pt
+
+=head1 MESSAGE FROM THE AUTHOR
+
+If you're using this module, please drop me a line to my e-mail. Tell
+me what you're doing with it. Also, feel free to suggest new
+bugs^H^H^H^H^H features.
 
 =head1 AUTHOR
 
-Jose Alves de Castro, E<lt>jac@natura.di.uminho.pt<gt>
+Jose Alves de Castro, E<lt>cog [at] cpan [dot] org<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -1,5 +1,9 @@
 Revision history for Perl extension Lingua::PT::Hyphenate.
 
+1.00  Mon May 15 00:16:58 2004
+	- now working based on rules. treated special cases as uppercased
+	  words, empty words, non words, etc.
+
 0.01  Mon May 10 21:08:58 2004
 	- first release ready. still doesn't treat all cases
 

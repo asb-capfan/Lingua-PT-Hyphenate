@@ -4,3 +4,4 @@ Makefile.PL
 MANIFEST
 README
 t/01-basic.t
+t/02-special.t
