@@ -4,4 +4,6 @@ Makefile.PL
 MANIFEST
 README
 t/01-basic.t
-t/02-special.t
+t/02-object.t
+t/03-special.t
+META.yml                                 Module meta-data (added by MakeMaker)

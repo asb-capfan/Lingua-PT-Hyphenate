@@ -18,16 +18,16 @@ our @EXPORT = qw(
 	hyphenate
 );
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
-my ($vogal,$consonant,$letter,$oc_fr);
+my ($vowel,$consonant,$letter,$oc_fr);
 my ($ditongo,$ditongos,@regex);
 
 BEGIN {
 
-  $vogal     = qr/[aeiouãâáêéíóõôúÃÁÉÍÓÕÔÊÂÚ]/i;
+  $vowel     = qr/[aeiouãâáàêéíóõôúÃÁÉÍÓÕÔÊÂÚ]/i;
   $consonant = qr/[zxcvbnmsdfghjlqrtpçÇ]/i;
-  $letter    = qr/[aeiouãâáêéíóõôúÃÁÂÉÊÍÓÕÔÚzxcvbnmsdfghjlqrtpçÇ]/i;
+  $letter    = qr/[aeiouãâáàêéíóõôúÃÁÂÉÊÍÓÕÔÚzxcvbnmsdfghjlqrtpçÇ]/i;
   $oc_fr     = qr/[ctpgdbfv]/i;
 
   my @ditongos = qw(ia ua uo ai ei oi ou ai ae au ao éi ei am$
@@ -40,19 +40,19 @@ BEGIN {
   $ditongos = qr/$ditongos/i;
 
   @regex = (
-    [ qr/[gq]u(?=$vogal)/i,                                  '.' ],
+    [ qr/[gq]u(?=$vowel)/i,                                  '.' ],
     [ qr/$letter(?=${consonant}s)/i,                         '.' ],
     [ qr/[cln](?=h)/i,                                       '.' ],
     [ qr/(?<=$consonant)$oc_fr(?=[lr])/i,                    '.' ],
     [ qr/^sub(?=$consonant)/i,                               '|' ],
     [ qr/(?<=$consonant)$consonant(?=$consonant)/i,          '|' ],
     [ qr/$ditongo(?=$ditongo)/i,                             '|' ],
-    [ qr/$vogal(?=$ditongo)/i,                               '|' ],
-    [ qr/$ditongos/i,                                        '.' ], # n sep dits
-    [ qr/$vogal(?=$vogal)/i,                                 '|' ],
+    [ qr/$vowel(?=$ditongo)/i,                               '|' ],
+    [ qr/$ditongos/i,                                        '.' ],
+    [ qr/$vowel(?=$vowel)/i,                                 '|' ],
     [ qr/$oc_fr(?=[lr])/i,                                   '.' ],
-    [ qr/${letter}\.?$consonant(?=${consonant}\.?$letter)/i, '|' ], # cons/cons
-    [ qr/$vogal(?=${consonant}\.?$letter)/i,                 '|' ], # vog/cons
+    [ qr/${letter}\.?$consonant(?=${consonant}\.?$letter)/i, '|' ],
+    [ qr/$vowel(?=${consonant}\.?$letter)/i,                 '|' ],
   );
 
 }
@@ -67,10 +67,24 @@ Lingua::PT::Hyphenate - Separates Portuguese words in syllables
 
   @syllables = hyphenate("teste")   # @syllables now hold ('tes', 'te')
 
+  # or
+
+  $word = new Lingua::PT::Hyphenate;
+  @syllables = $word->hyphenate;
+
 =cut
 
 sub hyphenate {
-  my $word = shift   || return ();
+
+  my $word;
+  if (ref($_[0]) eq 'Lingua::PT::Hyphenate') {
+    my $self = shift;
+    $word = $$self;
+  }
+  else {
+    $word = shift   || return ();
+  }
+
   $word =~ /^$letter+$/ || return ();
 
   for my $regex (@regex) {
@@ -82,6 +96,10 @@ sub hyphenate {
   split '\|', $word;
 }
 
+sub new {
+  my ($self, $word) = @_;
+  bless \$word, $self;
+}
 
 1;
 __END__
