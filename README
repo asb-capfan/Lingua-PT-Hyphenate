@@ -1,5 +1,7 @@
-Lingua/PT/Hyphenate version 1.04
-================================
+Hyphenate.pm version 1.05
+=========================
+
+=head1 NAME
 
 Lingua::PT::Hyphenate - Separates Portuguese words in syllables
 
@@ -80,3 +82,4 @@ Copyright 2004 by Jose Castro
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
+
