@@ -1,6 +1,6 @@
 package Lingua::PT::Hyphenate;
 
-use 5.008;
+use 5.006;
 use strict;
 use warnings;
 
@@ -18,7 +18,7 @@ our @EXPORT = qw(
 	hyphenate
 );
 
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 
 my ($vowel,$consonant,$letter,$oc_fr);
 my ($ditongo,$ditongos,@regex);
@@ -74,7 +74,13 @@ Lingua::PT::Hyphenate - Separates Portuguese words in syllables
 
 =cut
 
+sub new {
+  my ($self, $word) = @_;
+  bless \$word, $self;
+}
+
 sub hyphenate {
+  $_[0] || return ();
 
   my $word;
   if (ref($_[0]) eq 'Lingua::PT::Hyphenate') {
@@ -82,7 +88,7 @@ sub hyphenate {
     $word = $$self;
   }
   else {
-    $word = shift   || return ();
+    $word = shift;
   }
 
   $word =~ /^$letter+$/ || return ();
@@ -96,11 +102,6 @@ sub hyphenate {
   split '\|', $word;
 }
 
-sub new {
-  my ($self, $word) = @_;
-  bless \$word, $self;
-}
-
 1;
 __END__
 
@@ -110,20 +111,14 @@ Separates Portuguese words into syllables.
 
 =head1 SEE ALSO
 
-If you're into Natural Language Processing tools, you may like this
-Portuguese site: http://natura.di.uminho.pt
+If you're looking for Natural Language Processing tools, you may like
+this Portuguese site: http://natura.di.uminho.pt
 
 Gramatica Universal da Lingua Portuguesa (Texto Editora)
 
 =head1 BUGS
 
-None known, but more tests need be made.
-
-=head1 MESSAGE FROM THE AUTHOR
-
-If you're using this module, please drop me a line to my e-mail. Tell
-me what you're doing with it. Also, feel free to suggest new
-bugs^H^H^H^H^H features.
+None known, but more tests need to be made.
 
 =head1 AUTHOR
 
