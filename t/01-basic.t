@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 242;
+use Test::More tests => 493;
 BEGIN { use_ok('Lingua::PT::Hyphenate') };
 
 #########################
@@ -21,7 +21,7 @@ cor ti na
 gam bas
 sub ma ri no
 ca ma rão
-o cea no
+o ce a no
 tes te
 mão
 li mão
@@ -52,18 +52,17 @@ ca ba ça
 ca me lo
 co lu nas
 co lu na
-rá dio
+rá di o
 te le vi são
 me di ca men to
 pa ler ma
-em pre sa
 co le te
 ca ma
 guar da
 fa to
 ba nho
 ba nhei ra
-ar má rio
+ar má ri o
 mo to ri za da
 ca sa co
 so bre tu do
@@ -88,7 +87,7 @@ noi te
 dia
 co mi da
 re fei ção
-pa tro cí nio
+pa tro cí ni o
 eu ro pa
 cas te lo
 ci ne ma
@@ -96,12 +95,106 @@ gran de
 co ber tor
 
 se cre tá ria
-cor reio
+cor rei o
 fac to
 er ro
 ser ro te
-';
 
+bar ril
+rép til
+fós sil
+fu nil
+
+su ba li men tar
+de di car
+en car na do
+bi sa vô
+trans li ne ar
+trans mi gra ção
+tran sa tlân ti co
+cons tar
+de sa tar
+e xa mi nar
+óp ti mo
+subs cre ver
+ac ção
+
+se guir
+pseu dó ni mo
+psí qui co
+gra ma
+
+a dop tar
+jac to
+óp ti ca
+dis cen te
+ad mi nis trar
+
+se cre to
+pro cla mar
+a pli car
+a fro di te
+a pron tar
+pro ble má ti co
+a tle ta
+o pró bri o
+a trac ção
+ne vri te
+re pri mir
+
+sub lo car
+sub lu nar
+
+sa char
+fa lhar
+a pa nhar
+
+oc ci são
+ac ci o nar
+co mum men te
+con nos co
+nar rar
+pas so
+
+con cla mar
+em ble má ti co
+em pre en der
+ex pli car
+trans cre ver
+in frin gir
+
+subs tan ti vo
+ins tá vel
+ins pec tor
+pers pec ti var
+subs ti tu to
+
+guar dar
+al guém
+i gual
+li qui dar
+ne guem
+pin gue
+
+an dai
+jei to so
+teus
+tro vão
+
+gá ve a
+se me ar
+bi bli o te ca
+es pé ci e
+vo ou
+ru iu
+sai am
+sai ais
+
+tran qui li da de
+tra di ci o nal
+es pe cia li da de
+ma ca cos
+';
 
 my @tests = map { [split / /, $_] } split /\n/, $tests;
 

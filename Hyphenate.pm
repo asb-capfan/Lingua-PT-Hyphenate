@@ -18,30 +18,43 @@ our @EXPORT = qw(
 	hyphenate
 );
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
-my $regex;
-my @regex;
-my ($al,$cc);
+my ($vogal,$consonant,$letter,$oc_fr);
+my ($ditongo,$ditongos,@regex);
+
 BEGIN {
 
-#ai au aϊ ei eu ia ie io iu iι iτ oi ou ua ue ui uo uα uι uν αi αu ιi ιu σi γe γi γo υe
+  $vogal     = qr/[aeiouγβακινσυτϊΓΑΙΝΣΥΤΚΒΪ]/i;
+  $consonant = qr/[zxcvbnmsdfghjlqrtpηΗ]/i;
+  $letter    = qr/[aeiouγβακινσυτϊΓΑΒΙΚΝΣΥΤΪzxcvbnmsdfghjlqrtpηΗ]/i;
+  $oc_fr     = qr/[ctpgdbfv]/i;
 
-  $al = qr/[γαινσυϊηΓΑΙΝΣΥΪΗ[:alpha:]]/i;
+  my @ditongos = qw(ia ua uo ai ei oi ou ai ae au ao ιi ei am$
+                    ui oi σi ou γi γe γo iu eu en υe ui em$);
 
-  $cc = qr/bl|br|cl|cr|dr|fl|fr|gr|tl|tr|vr/i;
+  $ditongo = join "|", @ditongos;
+  $ditongo = qr/$ditongo/i;
 
-  $regex = join "|", map { /(.)(.)/ ; "$1(?=$2)" } q(aa aα aγ αa αα αγ γa γα
-           γγ ae aι αe αι γι aν αν γν ao aσ aτ aυ αo ασ ατ αυ γσ γτ γυ αϊ γu
-           γϊ ea eα eγ ιa ια ιγ ee eι ιe ιι eν ιν eo eσ eτ eυ ιo ισ ιτ ιυ eϊ
-           ιϊ iα iγ νa να νγ νe νι ii iν νi νν iσ iυ νo νσ ντ νυ iϊ νu νϊ oa
-           oα oγ σa σα σγ τa τα τγ υa υα υγ oe oι σe σι τe τι υι oν σν τi τν
-           υi υν oo oσ oτ oυ σo σσ στ συ τo τσ τυ υo υσ υτ υυ oϊ σu σϊ τu τϊ
-           υu υϊ uγ ϊa ϊα ϊγ ϊe ϊι ϊi ϊν uσ uτ uυ ϊo ϊσ ϊτ ϊυ uu uϊ ϊu ϊϊ );
+  $ditongos = join "|", map { /(.)(.*)/ ; "$1(?=$2)" } @ditongos;
+  $ditongos = qr/$ditongos/i;
 
-  @regex = (qr/$al[^γαινσυϊaeiou](?=[^γαινσυϊaieouh.]$al)/i,
-            qr/[γαινσυϊaieou](?=[^γαινσυϊaieou][^|.])/i,
-            qr/$regex/i);
+  @regex = (
+    [ qr/[gq]u(?=$vogal)/i,                                  '.' ],
+    [ qr/$letter(?=${consonant}s)/i,                         '.' ],
+    [ qr/[cln](?=h)/i,                                       '.' ],
+    [ qr/(?<=$consonant)$oc_fr(?=[lr])/i,                    '.' ],
+    [ qr/^sub(?=$consonant)/i,                               '|' ],
+    [ qr/(?<=$consonant)$consonant(?=$consonant)/i,          '|' ],
+    [ qr/$ditongo(?=$ditongo)/i,                             '|' ],
+    [ qr/$vogal(?=$ditongo)/i,                               '|' ],
+    [ qr/$ditongos/i,                                        '.' ], # n sep dits
+    [ qr/$vogal(?=$vogal)/i,                                 '|' ],
+    [ qr/$oc_fr(?=[lr])/i,                                   '.' ],
+    [ qr/${letter}\.?$consonant(?=${consonant}\.?$letter)/i, '|' ], # cons/cons
+    [ qr/$vogal(?=${consonant}\.?$letter)/i,                 '|' ], # vog/cons
+  );
+
 }
 
 =head1 NAME
@@ -57,16 +70,18 @@ Lingua::PT::Hyphenate - Separates Portuguese words in syllables
 =cut
 
 sub hyphenate {
-  $_ = shift || return ();
+  my $word = shift   || return ();
+  $word =~ /^$letter+$/ || return ();
 
-  /^$al+$/ || return ();
+  for my $regex (@regex) {
+    $word =~ s/$$regex[0]/${&}$$regex[1]/g;
+  }
 
-  s/$cc/.$&./g;
-  for my $regex ( @regex ) { s/$regex/$&|/g; }
-  y/.//d;
+  $word =~ y/.//d;
 
-  split '\|'
+  split '\|', $word;
 }
+
 
 1;
 __END__
@@ -75,25 +90,16 @@ __END__
 
 Separates Portuguese words into syllables.
 
-Separation is done in three easy steps:
-
-0) Mark special consonant combinations not to separate (like "tr",
-   "vr", etc);
-
-1) Separate consonants (not allowing consonants to be isolated; not
-   separating "ch", "lh", "nh");
-
-2) Separate vogals from consonants on their right;
-
-3) Separate vowels from vowels (except for special cases like "ai",
-   "au", etc).
-
-4) Unmark the special consonant combinations marked in step 0)
-
 =head1 SEE ALSO
 
 If you're into Natural Language Processing tools, you may like this
 Portuguese site: http://natura.di.uminho.pt
+
+Gramatica Universal da Lingua Portuguesa (Texto Editora)
+
+=head1 BUGS
+
+None known, but more tests need be made.
 
 =head1 MESSAGE FROM THE AUTHOR
 

@@ -1,4 +1,4 @@
-Lingua/PT/Hyphenate version 1.00
+Lingua/PT/Hyphenate version 1.01
 ================================
 
 Separates Portuguese words in syllables
@@ -6,19 +6,6 @@ Separates Portuguese words in syllables
   use Lingua::PT::Hyphenate;
     
   @syllables = hyphenate("teste")   # @syllables now hold ('tes', 'te')
-
-Works based on the following rules:
-
-0) Mark special consonant combinations not to separate (like "tr", "vr", etc);
-
-1) Separate consonants (not allowing consonants to be isolated; not
-   separating "ch", "lh", "nh");
-
-2) Separate vogals from consonants on their right;
-
-3) Separate vowels from vowels (except for special cases like "ai", "au", etc).
-
-4) Unmark the special consonant combinations marked in step 0)
 
 INSTALLATION
 
@@ -36,6 +23,8 @@ No dependencies
 SEE ALSO
 
 The POD documentation in Hyphenate.pm
+
+Gramática Universal da Língua Portuguesa (Texto Editora)
 
 COPYRIGHT AND LICENCE
 
