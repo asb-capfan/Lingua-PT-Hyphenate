@@ -18,7 +18,7 @@ our @EXPORT = qw(
 	hyphenate
 );
 
-our $VERSION = '1.05';
+our $VERSION = '1.06';
 
 =head1 NAME
 
@@ -95,13 +95,13 @@ returned as an array.
 
 =head2 new
 
-Creates a new Lingua::PT::Hyphenate object.
+Creates a new C<Lingua::PT::Hyphenate> object.
 
   $word = Lingua::PT::Hyphenate->new("palavra");
   # "palavra" is Portuguese for "word"
 
 If you're doing this lots of time, it would probably be better for you
-to use the hyphenate function directly (that is, creating a new object
+to use the C<hyphenate> function directly (that is, creating a new object
 for each word in a long text doesn't seem so bright if you're not
 going to use it later on).
 
