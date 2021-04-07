@@ -2,7 +2,7 @@ Changes
 lib/Lingua/PT/Hyphenate.pm
 Makefile.PL
 MANIFEST
-README
+README.md
 t/01-basic.t
 t/02-object.t
 t/03-special.t
